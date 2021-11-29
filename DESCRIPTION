@@ -4,7 +4,10 @@ Title: Analysis of Cluster Randomized Trials for Intent-to-Treat Effects and Net
 Version: 0.1.0
 Author: Chan Park [aut, cre], Hyunseung Kang [aut]
 Maintainer: Chan Park <chan.park@wisc.edu>
-Description: This package is designed for inference of the intent-to-treat effects and network effefcts.
+Description: This package is designed for inference of the intent-to-treat effects and network effects.
+Imports: 
+    lpSolve, 
+    glmnet
 License: None
 Encoding: UTF-8
 LazyData: true

@@ -75,7 +75,7 @@ Y <- Z*Y1 + (1-Z)*Y0
 Reformed.Data <- Data.Reform(Y,Z,A,C,X,seed=1)
 
 #################################
-# Sharp Bounds
+# Bounds
 #################################
 
 Bound1 <- SharpBound(Reformed.Data,paraC=c(1,2,3,4),method="Logistic",CIcalc=TRUE,SSsize=100,level=0.95,seed=1)
