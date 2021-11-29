@@ -1,10 +1,14 @@
 # CRTBound
 
-This Github repository contains CRTBound R package that implements the methodologies in [Park and Kang (2021)](https://www.tandfonline.com/doi/full/10.1080/01621459.2021.1983437 "IVNet"). We consider a cluster randomized trial (CRT) when both partial interference and noncompliance are present. In particular, the package focuses on the three target estimands:
-* Intent-to-Treat (ITT) Effect 
-* Heteogeneous ITT effect using the approach in Ding et al. (2019)
+This Github repository contains CRTBound R package that implements the methodologies in [Park and Kang (2021)](https://www.tandfonline.com/doi/full/10.1080/01621459.2021.1983437 "IVNet"). We consider a cluster randomized trial (CRT) when both partial interference and noncompliance are present. In particular, the package focuses on the three types of the causal estimands:
+* Overall intent-to-Treat (ITT) Effect 
+* Heteogeneous ITT effect
 * Compliance group ITT effects (i.e. network effects) arising from CRTs under the presence of interference and noncompliance
 
+To infer the overall, heterogeneous ITT effects, we propose a modest extension of a nonparametric, regression-esque method based on Ding et al. (2019). In CRTBound package, the inference of the overall, heterogeneous ITT effects can be done by running `r ITT(Data)` and `r HTE(Data)' functions, respecitvely.
+
+To infer the network effects, we use the classification-based bounding methods via linear programming. In CRTBound package, this method is implemented in `r SharpBound(Data)` function. Additionally, we propose extensions of bounds by Grilli and Mealli (2008) and
+Long and Hudgens (2013) to CRT settings with interference. In CRTBound package, these methods are implemented in `r LongHudgens' function. Lastly, by intersecting the bound estimates from the above two approaches, narrower bounds can be obtained. In CRTBound package, these methods are implemented in `r Bound.Intersect' function. 
 
 
 This package is currently in beta.
@@ -86,6 +90,10 @@ Bound3 <- Bound.Intersect(Bound1,Bound2,level=0.95)
 
 ## References
 
-Peng Ding, Avi Feller & Luke Miratrix (2019) **Decomposing Treatment Effect Variation**, _Journal of the American Statistical Association_, 114:525, 304-317 [[link](https://www.tandfonline.com/doi/full/10.1080/01621459.2017.1407322 "Ding")]
+Grilli Leonardo & Mealli Fabrizia (2008) **Nonparametric Bounds on the Causal Effect of University Studies on Job Opportunities Using Principal Stratification**, _Journal of Educational and Behavioral Statistics_, 33(1), 111-130 [[link](https://journals.sagepub.com/doi/abs/10.3102/1076998607302627 "GM")]
 
-Chan Park & Hyunseung Kang (2021+) **Assumption-Lean Analysis of Cluster Randomized Trials in Infectious Diseases for Intent-to-Treat Effects and Network Effects**, _Journal of the American Statistical Association_ [[link](https://www.tandfonline.com/doi/full/10.1080/01621459.2021.1983437 "IVNet")]
+Dustin M. Long & Michael G. Hudgens (2013) **Sharpening Bounds on Principal Effects with Covariates**, _Biometrics_, 69(4), 812-819 [[link](https://onlinelibrary.wiley.com/doi/10.1111/biom.12103 "LH")]
+
+Peng Ding, Avi Feller & Luke Miratrix (2019) **Decomposing Treatment Effect Variation**, _Journal of the American Statistical Association_, 114(525), 304-317 [[link](https://www.tandfonline.com/doi/full/10.1080/01621459.2017.1407322 "Ding")]
+
+Chan Park & Hyunseung Kang (2021+) **Assumption-Lean Analysis of Cluster Randomized Trials in Infectious Diseases for Intent-to-Treat Effects and Network Effects**, _Journal of the American Statistical Association_, In press [[link](https://www.tandfonline.com/doi/full/10.1080/01621459.2021.1983437 "IVNet")]
