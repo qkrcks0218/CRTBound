@@ -1,11 +1,12 @@
 Package: CRTBound
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Analysis of Cluster Randomized Trials for Intent-to-Treat Effects and Network Effects
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Imports:
+    glmnet,
+    lpSolve
+Authors@R: c(person("Chan","Park",email="chan.park@wisc.edu",role=c("aut","cre")),person("Hyunseung","Kang",email="hkang84@wisc.edu",role="aut"))
+Maintainer: Chan Park <chan.park at wisc.edu>
+License: none
 Encoding: UTF-8
 LazyData: true
