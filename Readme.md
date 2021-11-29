@@ -5,10 +5,9 @@ This Github repository contains CRTBound R package that implements the methodolo
 * Heteogeneous ITT effect
 * Compliance group ITT effects (i.e. network effects) arising from CRTs under the presence of interference and noncompliance
 
-To infer the overall, heterogeneous ITT effects, we propose a modest extension of a nonparametric, regression-esque method based on Ding et al. (2019). In CRTBound package, the inference of the overall, heterogeneous ITT effects can be done by running `r ITT(Data)` and `r HTE(Data)' functions, respecitvely.
+To infer the overall, heterogeneous ITT effects, we propose a modest extension of a nonparametric, regression-esque method based on Ding et al. (2019). In CRTBound package, the inference of the overall, heterogeneous ITT effects can be done by running `ITT(Data)` and `HTE(Data)` functions, respecitvely.
 
-To infer the network effects, we use the classification-based bounding methods via linear programming. In CRTBound package, this method is implemented in `r SharpBound(Data)` function. Additionally, we propose extensions of bounds by Grilli and Mealli (2008) and
-Long and Hudgens (2013) to CRT settings with interference. In CRTBound package, these methods are implemented in `r LongHudgens' function. Lastly, by intersecting the bound estimates from the above two approaches, narrower bounds can be obtained. In CRTBound package, these methods are implemented in `r Bound.Intersect' function. 
+To infer the network effects, we use the classification-based bounding methods via linear programming. In CRTBound package, this method is implemented in `SharpBound(Data)` function. Additionally, we propose extensions of bounds by Grilli and Mealli (2008) and Long and Hudgens (2013) to CRT settings with interference. In CRTBound package, these methods are implemented in `LongHudgens` function. Lastly, by intersecting the bound estimates from the above two approaches, narrower bounds can be obtained. In CRTBound package, these methods are implemented in `Bound.Intersect` function. 
 
 
 This package is currently in beta.
