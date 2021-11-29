@@ -1,62 +1,76 @@
 \name{HTE}
 \alias{HTE}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{HTE
-%%  ~~function to do ... ~~
+\title{Inference of the Heterogeneous ITT Effect
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Analyze the data (obtained from \code{\link{Data.Reform}} function) to infer the heterogeneous ITT effect; see Section 3 of Park and Kang (2021) for details.
 }
 \usage{
-HTE(x)
+HTE(Reformed.Data,Xvar=NULL,constant=TRUE){
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
+  \item{Reformed.Data}{A list obtained from \code{\link{Data.Reform}} function.}
+  \item{Xvar}{\emph{(Optional)} Indices of the pre-treatment covariate matrix Reformed.Data$X that are used in inference of the heterogeneous ITT effect. The default option is to use all pre-treatment covariates.}
+  \item{constant}{\emph{(Optional)} A logical value whether the constant intercept is included in the analysis.}
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+\item{Estimate}{A matrix containing the point estimate of the heterogeneity parameter, the standard errors, and the z-statistics.}
+\item{NonConst.Chi.Sq.Statistic}{A chi-square statistic obtained from testing the overall non-intercept null hypothesis.}
 }
 \references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+Chan Park & Hyunseung Kang (2021+) \strong{Assumption-Lean Analysis of Cluster Randomized Trials in Infectious Diseases for Intent-to-Treat Effects and Network Effects}, \emph{Journal of the American Statistical Association} \href{https://www.tandfonline.com/doi/full/10.1080/01621459.2021.1983437}{[Link]}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+#################################
+# Generate Population
+#################################
 
-## The function is currently defined as
-function (x)
-{
-  }
+J <- 100 ; m <- 60
+nc <- sample(c(3,4,5),J,replace=T)
+N <- sum(nc)
+C <- rep(1:J,nc)
+n <- rep(nc,nc)
+X1 <- rnorm(N)
+X2 <- rbinom(N,1,0.3)
+X3 <- rep(rnorm(J),nc)
+A0 <- rbinom(N,1,logistic(-2+2*X3))
+A1 <- apply(cbind(A0,rbinom(N,1,logistic(-2+3*X1+3*X2+2*X3))),1,max)
+OtherA1 <- (rep(aggregate(A1~C,FUN="sum")[,2],nc)-A1)/(n-1)
+NT <- which(A1==0 & A0==0)
+AT <- which(A1==1 & A0==1)
+CO <- which(A1==1 & A0==0)
+Y0 <- Y1 <- rep(0,N)
+for(jj in NT){
+    Y0[jj] <- rbinom(1,1,logistic(-2+2*OtherA1[jj]))
+    Y1[jj] <- max(Y0[jj],rbinom(1,1,logistic(-2+2*OtherA1[jj])))
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
+for(jj in AT){
+    Y0[jj] <- rbinom(1,1,logistic(2+X1[jj]+X2[jj]))
+    Y1[jj] <- max(Y0[jj],rbinom(1,1,logistic(2+X1[jj]+X2[jj])))
+}
+for(jj in CO){
+    Y0[jj] <- rbinom(1,1,logistic(-2+2*OtherA1[jj]))
+    Y1[jj] <- max(Y0[jj],rbinom(1,1,logistic(2+X1[jj]+X2[jj])))
+}
+X <- cbind(1,X1,X2,X3,n)
+
+Zc <- rep(0,J)
+Zc[sort(sample(J,m))] <- 1
+Z <- rep(Zc,nc)
+A <- Z*A1 + (1-Z)*A0
+Y <- Z*Y1 + (1-Z)*Y0
+
+#################################
+# Reform the Data
+#################################
+
+Reformed.Data <- Data.Reform(Y,Z,A,C,X,seed=1)
+
+#################################
+# HT Effect
+#################################
+
+HT.Data <- HTE(Reformed.Data,Xvar=c(1,2,3,4))
+}

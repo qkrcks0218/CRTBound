@@ -1,62 +1,32 @@
 \name{solution}
 \alias{solution}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{solution
+\title{Find the Calibration Value
 %%  ~~function to do ... ~~
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+Find the calibration value \emph{q} satisfying \eqn{T = \sum_{ji} I_{c,h} (L_{ji} - q)} from a grid-search.}
 \usage{
-solution(x)
+solution(L,T,h,c,thr)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
+  \item{L}{A vector in the surrogate indicator function \eqn{\mathcal{I}_{c,h}}.}
+  \item{T}{A number in the left hand side.}
+  \item{h,c}{Parameters of the surrogate indicator function \eqn{\mathcal{I}_{c,h}}; see Section 4.2 of Park and Kang (2021) for details.}
+  \item{thr}{A number used as the threshold in the grid-search. The true solution \emph{q}* satisfies \eqn{|q*-q|<thr}. }
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+  A solution \emph{q} to \eqn{T = \sum_{ji} \mathcal{I}_{c,h} (L_{ji} - q)}.
 }
 \references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+Chan Park & Hyunseung Kang (2021+) \strong{Assumption-Lean Analysis of Cluster Randomized Trials in Infectious Diseases for Intent-to-Treat Effects and Network Effects}, \emph{Journal of the American Statistical Association} \href{https://www.tandfonline.com/doi/full/10.1080/01621459.2021.1983437}{[Link]}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x)
-{
-  }
+L <- c(1.1, 1.8, 2.7, 4.1, 5.2,
+       6.1, 7.4, 7.9, 8.8, 9.9)
+T <- 5
+c <- h <- 10^(-4)
+thr <- 10^(-4)
+solution(L,T,h,c,thr) # Returns 5.65
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
