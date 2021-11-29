@@ -4,9 +4,7 @@
 \description{
 Analyze the data (obtained from \code{\link{Data.Reform}} function) to infer the compliance group ITT effect using the approaches in Grilli and Mealli (2008), Long and Hudgens (2013); see Section A.5.2 of Park and Kang (2021) for details.
 }
-\usage{
-LongHudgens(Reformed.Data,paraC,CIcalc=TRUE,SSsize=1000,level=0.95,seed=1)
-}
+\usage{LongHudgens(Reformed.Data,paraC,CIcalc=TRUE,SSsize=1000,level=0.95,seed=1)}
 \arguments{
   \item{Reformed.Data}{A list obtained from \code{\link{Data.Reform}} function.}
   \item{paraC}{\emph{(Optional)} Indices of the binary pre-treatment covariate matrix Reformed.Data$X that are used in inference of the compliance group ITT effect. The dafault option is not using any pre-treatment covariate (i.e. bounds without pre-treatment covariate adjustment).}

@@ -3,9 +3,7 @@
 \title{Sharpening Bounds of the Compliance Group ITT Effects Using Multiple Approaches}
 \description{
 Sharpening bounds of the compliance group ITT effects using the approaches in Grilli and Mealli (2008), Long and Hudgens (2013), and Park and Kang (2021).}
-\usage{
-Bound.Intersect(SharpBound.Object,LongHudgens.Object,level=0.95)
-}
+\usage{Bound.Intersect(SharpBound.Object,LongHudgens.Object,level=0.95)}
 \arguments{
   \item{SharpBound.Object}{An object obtained from \code{\link{SharpBound}} function}
   \item{LongHudgens.Object}{An object obtained from \code{\link{LongHudgens}} function}

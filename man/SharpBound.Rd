@@ -4,9 +4,7 @@
 \description{
 Analyze the data (obtained from \code{\link{Data.Reform}} function) to infer the compliance group ITT effect using classifier-based approach; see Section 4 of Park and Kang (2021) for details.
 }
-\usage{
-SharpBound(Reformed.Data, paraC=NULL, method="Linear", CIcalc=FALSE, SSsize=1000, level=0.95, seed=1){
-}
+\usage{SharpBound(Reformed.Data, paraC=NULL, method="Linear", CIcalc=FALSE, SSsize=1000, level=0.95, seed=1)}
 \arguments{
   \item{Reformed.Data}{A list obtained from \code{\link{Data.Reform}} function.}
   \item{paraC}{\emph{(Optional)} Indices of the pre-treatment covariate matrix Reformed.Data$X that are used in inference of the compliance group ITT effect. The default option is to use all pre-treatment covariates.}
@@ -16,7 +14,7 @@ SharpBound(Reformed.Data, paraC=NULL, method="Linear", CIcalc=FALSE, SSsize=1000
   \item{level}{\emph{(Optional)} The confidence level of the confidence interval. The default option is 0.95.}
   \item{seed}{\emph{(Optional)} A random seed to generate the bootstrap resamples used for the construction of the confidence intervals.}
 }
-}
+
 \value{
 \item{Bound}{Bound estimates of the compliance group ITT effects.}
 \item{Violation}{Summary whether the linear program was feasible.}

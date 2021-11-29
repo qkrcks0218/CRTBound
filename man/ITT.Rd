@@ -11,7 +11,6 @@ ITT(Reformed.Data)
 \arguments{
   \item{Reformed.Data}{A list obtained from \code{\link{Data.Reform}} function.}
 }
-}
 \value{
 \item{ITT}{A point estimate of the ITT effect.}
 \item{SE}{The standard error of the above point estimate.}
