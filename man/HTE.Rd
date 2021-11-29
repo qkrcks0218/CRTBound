@@ -7,9 +7,8 @@
 Analyze the data (obtained from \code{\link{Data.Reform}} function) to infer the heterogeneous ITT effect; see Section 3 of Park and Kang (2021) for details.
 }
 \usage{
-HTE(Reformed.Data,Xvar=NULL,constant=TRUE){
+HTE(Reformed.Data,Xvar=NULL,constant=TRUE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{Reformed.Data}{A list obtained from \code{\link{Data.Reform}} function.}
   \item{Xvar}{\emph{(Optional)} Indices of the pre-treatment covariate matrix Reformed.Data$X that are used in inference of the heterogeneous ITT effect. The default option is to use all pre-treatment covariates.}
