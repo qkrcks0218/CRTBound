@@ -1,6 +1,5 @@
 \name{SharpBound}
 \alias{SharpBound}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Inference of the Compliance Group ITT Effects Using Classifier-based Approach}
 \description{
 Analyze the data (obtained from \code{\link{Data.Reform}} function) to infer the compliance group ITT effect using classifier-based approach; see Section 4 of Park and Kang (2021) for details.
@@ -8,7 +7,6 @@ Analyze the data (obtained from \code{\link{Data.Reform}} function) to infer the
 \usage{
 SharpBound(Reformed.Data, paraC=NULL, method="Linear", CIcalc=FALSE, SSsize=1000, level=0.95, seed=1){
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{Reformed.Data}{A list obtained from \code{\link{Data.Reform}} function.}
   \item{paraC}{\emph{(Optional)} Indices of the pre-treatment covariate matrix Reformed.Data$X that are used in inference of the compliance group ITT effect. The default option is to use all pre-treatment covariates.}

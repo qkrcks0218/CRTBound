@@ -1,6 +1,5 @@
 \name{ITT}
 \alias{ITT}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Inference of the Intent-to-Treat Effect
 }
 \description{
@@ -9,7 +8,6 @@ Analyze the data (obtained from \code{\link{Data.Reform}} function) to infer the
 \usage{
 ITT(Reformed.Data)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{Reformed.Data}{A list obtained from \code{\link{Data.Reform}} function.}
 }

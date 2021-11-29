@@ -1,6 +1,5 @@
 \name{HTE}
 \alias{HTE}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Inference of the Heterogeneous ITT Effect
 }
 \description{

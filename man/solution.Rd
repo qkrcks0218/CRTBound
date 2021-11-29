@@ -1,15 +1,10 @@
 \name{solution}
 \alias{solution}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Find the Calibration Value
-%%  ~~function to do ... ~~
 }
 \description{
 Find the calibration value \emph{q} satisfying \eqn{T = \sum_{ji} I_{c,h} (L_{ji} - q)} from a grid-search.}
-\usage{
-solution(L,T,h,c,thr)
-}
-%- maybe also 'usage' for other objects documented here.
+\usage{solution(L,T,h,c,thr)}
 \arguments{
   \item{L}{A vector in the surrogate indicator function \eqn{\mathcal{I}_{c,h}}.}
   \item{T}{A number in the left hand side.}

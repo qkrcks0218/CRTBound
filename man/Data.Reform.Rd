@@ -1,16 +1,11 @@
 \name{Data.Reform}
 \alias{Data.Reform}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Reform the data
-%%  ~~function to do ... ~~
 }
 \description{
 Reform the data to a compatible form for \code{\link{ITT}}, \code{\link{HTE}}, \code{\link{SharpBound}}, and \code{\link{LongHudgens}} functions.
 }
-\usage{
-Data.Reform(Y,Z,A,C,X,seed=1)
-}
-%- maybe also 'usage' for other objects documented here.
+\usage{Data.Reform(Y,Z,A,C,X,seed=1)}
 \arguments{
   \item{Y}{\eqn{N-by-1} vector containing the outcome of individuals where \eqn{N} is the number of individuals in the population.}
   \item{Z}{\eqn{N-by-1} 0-1 vector containing the treatment assignment where Z=1 indicates an individual was assigned to treatment.}
