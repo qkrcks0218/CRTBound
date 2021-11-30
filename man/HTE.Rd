@@ -70,6 +70,6 @@ Simulated.Data <- Simulation.Reform(Y0,Y1,Z,A0,A1,C,X,seed=1)
 # HT Effect
 #################################
 
-HT.Data <- HTE(Reformed.Data,Xvar=c(1,2,3,4),Input.Type="Data")
-HT.Sim.Data <- HTE(Simulated.Data,Xvar=c(1,2,3,4),Input.Type="Sim")
+HT.Data <- HTE(Reformed.Data,Xvar=1:5,Input.Type="Data")
+HT.Sim.Data <- HTE(Simulated.Data,Xvar=1:5,Input.Type="Sim")
 }

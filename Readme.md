@@ -84,18 +84,18 @@ ITT.Sim.Data <- ITT(Simulated.Data,Input.Type="Sim")
 # HT Effect
 #################################
 
-HT.Data <- HTE(Reformed.Data,Xvar=c(1,2,3,4),Input.Type="Data")
-HT.Sim.Data <- HTE(Simulated.Data,Xvar=c(1,2,3,4),Input.Type="Sim")
+HT.Data <- HTE(Reformed.Data,Xvar=1:5,Input.Type="Data")
+HT.Sim.Data <- HTE(Simulated.Data,Xvar=1:5,Input.Type="Sim")
 
 #################################
 # Bounds
 #################################
 
-Bound1 <- SharpBound(Reformed.Data,paraC=c(1,2,3,4),method="Logistic",CIcalc=TRUE,SSsize=100,level=0.95,seed=1,Input.Type="Data")
+Bound1 <- SharpBound(Reformed.Data,paraC=1:5,method="Logistic",CIcalc=TRUE,SSsize=100,level=0.95,seed=1,Input.Type="Data")
 Bound2 <- LongHudgens(Reformed.Data,paraC=c(3),CIcalc=TRUE,SSsize=100,level=0.95,seed=1,Input.Type="Data")
 Bound3 <- Bound.Intersect(Bound1,Bound2,level=0.95,Input.Type="Data")
 
-Bound1.Sim <- SharpBound(Simulated.Data,paraC=c(1,2,3,4),method="Logistic",CIcalc=TRUE,SSsize=100,level=0.95,seed=1,Input.Type="Sim")
+Bound1.Sim <- SharpBound(Simulated.Data,paraC=1:5,method="Logistic",CIcalc=TRUE,SSsize=100,level=0.95,seed=1,Input.Type="Sim")
 Bound2.Sim <- LongHudgens(Simulated.Data,paraC=c(3),CIcalc=TRUE,SSsize=100,level=0.95,seed=1,Input.Type="Sim")
 Bound3.Sim <- Bound.Intersect(Bound1.Sim,Bound2.Sim,level=0.95,Input.Type="Sim")
 ```
