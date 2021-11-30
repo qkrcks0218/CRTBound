@@ -101,9 +101,11 @@ Bound3.Sim <- Bound.Intersect(Bound1.Sim,Bound2.Sim,level=0.95,Input.Type="Sim")
 ```
 
 
+## Reproduce Park and Kang (2021)
 
-
-
+The R-codes in `/Reproduce' folder replicate the simulation and the data analysis in Park and Kang (2021). 
+The simulation results may differ from those in Park and Kang (2021). 
+The simulated data set used in Park and Kang (2021) is available by loading Simulation.RData.
 
 
 ## References

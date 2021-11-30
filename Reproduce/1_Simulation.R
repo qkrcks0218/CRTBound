@@ -212,6 +212,8 @@ for(ii in 1:151){
 
 Simulated.Data <- Simulation.Reform(Y0,Y1,Z,A0,A1,HHID,Pre.Cov,seed=8888)
 
+# load("Simulation.RData")
+
 ###################################
 # True Effects
 ###################################
