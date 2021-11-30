@@ -7,7 +7,7 @@ Analyze the data (obtained from \code{\link{Data.Reform}} or \code{\link{Simulat
 \usage{LongHudgens(Data, paraC, CIcalc=TRUE, SSsize=1000, level=0.95, seed=1, Input.Type="Data")}
 \arguments{
   \item{Data}{A list obtained from \code{\link{Data.Reform}} and \code{\link{Simulation.Reform}} functions.}
-  \item{paraC}{\emph{(Optional)} Indices of the binary pre-treatment covariate matrix Reformed.Data$X that are used in inference of the compliance group ITT effect. The dafault option is not using any pre-treatment covariate (i.e. bounds without pre-treatment covariate adjustment).}
+  \item{paraC}{\emph{(Optional)} Indices of the binary pre-treatment covariate matrix Data$X that are used in inference of the compliance group ITT effect. The dafault option is not using any pre-treatment covariate (i.e. bounds without pre-treatment covariate adjustment).}
   \item{CIcalc}{\emph{(Optional)} A logical value whether the bootstrap-based confidence intervals are obtained. The dafault option is TRUE.}
   \item{SSsize}{\emph{(Optional)} The total number of the bootstrap resamples used for the construction of the confidence intervals. The dafault option is 1000.}
   \item{level}{\emph{(Optional)} The confidence level of the confidence interval. The default option is 0.95.}
