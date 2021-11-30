@@ -3,18 +3,17 @@
 \title{Inference of the Heterogeneous ITT Effect
 }
 \description{
-Analyze the data (obtained from \code{\link{Data.Reform}} function) to infer the heterogeneous ITT effect; see Section 3 of Park and Kang (2021) for details.
+Analyze the data (obtained from \code{\link{Data.Reform}} or \code{\link{Simulation.Reform}} functions) to infer the heterogeneous ITT effect; see Section 3 of Park and Kang (2021) for details.
 }
-\usage{
-HTE(Reformed.Data,Xvar=NULL,constant=TRUE)
-}
+\usage{HTE(Data, Xvar=NULL, constant=TRUE, Input.Type="Data")}
 \arguments{
-  \item{Reformed.Data}{A list obtained from \code{\link{Data.Reform}} function.}
+  \item{Data}{A list obtained from \code{\link{Data.Reform}} and \code{\link{Simulation.Reform}} functions.}
   \item{Xvar}{\emph{(Optional)} Indices of the pre-treatment covariate matrix Reformed.Data$X that are used in inference of the heterogeneous ITT effect. The default option is to use all pre-treatment covariates.}
   \item{constant}{\emph{(Optional)} A logical value whether the constant intercept is included in the analysis.}
 }
+\item{Input.Type}{\emph{(Optional)} A variable whether Data is from \code{\link{Data.Reform}} (Input.Type="Data") or \code{\link{Simulation.Reform}} (Input.Type="Sim") function. The default The default option is "Data".}
 \value{
-\item{Estimate}{A matrix containing the point estimate of the heterogeneity parameter, the standard errors, and the z-statistics.}
+\item{Estimate}{A matrix containing the point estimates of the heterogeneity parameters, the standard errors, and the z-statistics. When Input.Type="Sim", the true heterogeneity parameters and the true standard errors are available.}
 \item{NonConst.Chi.Sq.Statistic}{A chi-square statistic obtained from testing the overall non-intercept null hypothesis.}
 }
 \references{
@@ -65,10 +64,12 @@ Y <- Z*Y1 + (1-Z)*Y0
 #################################
 
 Reformed.Data <- Data.Reform(Y,Z,A,C,X,seed=1)
+Simulated.Data <- Simulation.Reform(Y0,Y1,Z,A0,A1,C,X,seed=1)
 
 #################################
 # HT Effect
 #################################
 
-HT.Data <- HTE(Reformed.Data,Xvar=c(1,2,3,4))
+HT.Data <- HTE(Reformed.Data,Xvar=c(1,2,3,4),Input.Type="Data")
+HT.Sim.Data <- HTE(Simulated.Data,Xvar=c(1,2,3,4),Input.Type="Sim")
 }

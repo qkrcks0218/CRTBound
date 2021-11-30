@@ -58,12 +58,12 @@ solution <- function(LF,NNT,h,c,thr){
 }
 
 Data.Reform <- function(Y,Z,A,C,X,seed=1){
-  result <- list()
-  result$Y <- Y
-  result$Z <- Z
-  result$A <- A
-  result$C <- C
-  result$X <- X
+  Data <- list()
+  Data$Y <- Y
+  Data$Z <- Z
+  Data$A <- A
+  Data$C <- C
+  Data$X <- X
   if( sum(apply((X-1)^2,2,sum)==0)==0 ){
     X <- cbind(1,X)
     colnames(X) <- c("Const",colnames(X))
@@ -74,45 +74,102 @@ Data.Reform <- function(Y,Z,A,C,X,seed=1){
     }
   }
 
-  result$N <- length(result$Y)
+  Data$N <- length(Data$Y)
 
-  result$J <- length(table(result$C))
-  result$Class <- unique(result$C)
+  Data$J <- length(table(Data$C))
+  Data$Class <- unique(Data$C)
 
-  result$n <- rep(0,result$N)
-  for(jj in 1:length(result$N)){
-    result$n[jj] <- sum(result$C==result$C[jj])
+  Data$n <- rep(0,Data$N)
+  for(jj in 1:length(Data$N)){
+    Data$n[jj] <- sum(Data$C==Data$C[jj])
   }
-  result$nc <- rep(0,result$J)
-  for(jj in 1:result$J){
-    result$nc[jj] <- sum(result$C==result$Class[jj])
+  Data$nc <- rep(0,Data$J)
+  for(jj in 1:Data$J){
+    Data$nc[jj] <- sum(Data$C==Data$Class[jj])
   }
 
-  result$Zc <- as.numeric(unique(cbind(result$C,result$Z))[,2])
-  result$m <- sum(result$Zc)
+  Data$Zc <- as.numeric(unique(cbind(Data$C,Data$Z))[,2])
+  Data$m <- sum(Data$Zc)
 
   set.seed(seed)
 
-  result$error <- cbind( 2*runif(result$N)*(10^(-10)) - 10^(-10),
-                         2*runif(result$N)*(10^(-10)) - 10^(-10),
-                         2*runif(result$N)*(10^(-10)) - 10^(-10) )
-  return(result)
+  Data$error <- cbind( 2*runif(Data$N)*(10^(-10)) - 10^(-10),
+                       2*runif(Data$N)*(10^(-10)) - 10^(-10),
+                       2*runif(Data$N)*(10^(-10)) - 10^(-10) )
+  return(Data)
 }
 
-ITT <- function(result){
+
+Simulation.Reform <- function(Y0,Y1,Z,A0,A1,C,X,seed=1){
+  Data <- list()
+  Data$Y0 <- Y0
+  Data$Y1 <- Y1
+  Data$Y <- Y1*Z + Y0*(1-Z)
+  Data$Z <- Z
+  Data$A0 <- A0
+  Data$A1 <- A1
+  Data$A <- A1*Z + A0*(1-Z)
+  Data$C <- C
+  Data$X <- X
+  if( sum(apply((X-1)^2,2,sum)==0)==0 ){
+    X <- cbind(1,X)
+    colnames(X) <- c("Const",colnames(X))
+  } else {
+    pos.const <- which(apply((X-1)^2,2,sum)==0)
+    if( pos.const>1 ){
+      X <- X[,c(pos.const,(1:dim(X)[2])[-pos.const])]
+    }
+  }
+
+  Data$N <- length(Data$Y)
+
+  Data$J <- length(table(Data$C))
+  Data$Class <- unique(Data$C)
+
+  Data$n <- rep(0,Data$N)
+  for(jj in 1:length(Data$N)){
+    Data$n[jj] <- sum(Data$C==Data$C[jj])
+  }
+  Data$nc <- rep(0,Data$J)
+  for(jj in 1:Data$J){
+    Data$nc[jj] <- sum(Data$C==Data$Class[jj])
+  }
+
+  Data$Zc <- as.numeric(unique(cbind(Data$C,Data$Z))[,2])
+  Data$m <- sum(Data$Zc)
+
+  Data$CompSt <- rep("",Data$N)
+  Data$CompSt[(A1==0 & A0==0)] <- "NT"
+  Data$CompSt[(A1==1 & A0==1)] <- "AT"
+  Data$CompSt[(A1==1 & A0==0)] <- "CO"
+
+  set.seed(seed)
+
+  Data$error <- cbind( 2*runif(Data$N)*(10^(-10)) - 10^(-10),
+                       2*runif(Data$N)*(10^(-10)) - 10^(-10),
+                       2*runif(Data$N)*(10^(-10)) - 10^(-10) )
+  return(Data)
+}
+
+ITT <- function(Data,Input.Type="Data"){
   # result : reformed data
-  Y <- result$Y
-  Z <- result$Z
-  C <- result$C
-  A <- result$A
-  Class <- result$Class
-  J <- result$J
-  N <- result$N
-  n <- result$n
-  nc <- result$nc
-  Zc <- result$Zc
-  m <- result$m
-  X <- result$X
+  Y <- Data$Y
+  Z <- Data$Z
+  C <- Data$C
+  A <- Data$A
+  Class <- Data$Class
+  J <- Data$J
+  N <- Data$N
+  n <- Data$n
+  nc <- Data$nc
+  Zc <- Data$Zc
+  m <- Data$m
+  X <- Data$X
+
+  if(Input.Type!="Data"){
+    Y0 <- Data$Y0
+    Y1 <- Data$Y1
+  }
 
   bY.type1 <- rep(0,J)
   for(jj in 1:J){
@@ -136,34 +193,60 @@ ITT <- function(result){
   }
   cons.var.type1 <- var(R1[Zc==1])/m + var(R1[Zc==0])/(J-m)
 
-  OUT <- matrix( c(hat.type1.t1 - hat.type1.t0,
-                   sqrt(cons.var.type1),
-                   (hat.type1.t1-hat.type1.t0)/sqrt(cons.var.type1)),1,5)
-  colnames(OUT) <- c("ITT","SE","z-statistic")
-  rownames(OUT) <- ""
+  OUT1 <- matrix( c(hat.type1.t1 - hat.type1.t0,
+                    sqrt(cons.var.type1),
+                    (hat.type1.t1-hat.type1.t0)/sqrt(cons.var.type1)),1,3)
+  colnames(OUT1) <- c("ITT","SE","z-statistic")
+  rownames(OUT1) <- ""
 
-  return(OUT)
+
+  if(Input.Type!="Data"){
+
+    bY1.type1 <- rep(0,J)
+    bY0.type1 <- rep(0,J)
+    for(jj in 1:J){
+      bY1.type1[jj] <- sum(Y1[C==Class[jj]])*(J/N)
+      bY0.type1[jj] <- sum(Y0[C==Class[jj]])*(J/N)
+    }
+
+    type1.t1 <- sum(bY1.type1)/J
+    type1.t0 <- sum(bY0.type1)/J
+
+    trueR1 <- (bY1.type1 - type1.t1*nc*J/N)
+    trueR0 <- (bY0.type1 - type1.t0*nc*J/N)
+
+    true.var.type1 <- var(trueR1)/m + var(trueR0)/(J-m) - var(trueR1-trueR0)/J
+
+    OUT1 <- matrix(c(OUT1,c(type1.t1- type1.t0, sqrt(true.var.type1))),1,5)
+
+    colnames(OUT1) <- c("ITT","SE","z-statistic","True.ITT","True.SE")
+    rownames(OUT1) <- ""
+
+  }
+
+
+  return(OUT1)
 
 }
 
-HTE <- function(result,Xvar=NULL,constant=TRUE){
+HTE <- function(Data,Xvar=NULL,constant=TRUE,Input.Type="Data"){
   # result : reformed data
   # Xvar   : column indices corresponding to beta
-  Y <- result$Y
-  Z <- result$Z
-  C <- result$C
-  A <- result$A
-  Class <- result$Class
-  J <- result$J
-  N <- result$N
-  n <- result$n
-  nc <- result$nc
-  Zc <- result$Zc
-  m <- result$m
+  Y <- Data$Y
+  Z <- Data$Z
+  C <- Data$C
+  A <- Data$A
+  Class <- Data$Class
+  J <- Data$J
+  N <- Data$N
+  n <- Data$n
+  nc <- Data$nc
+  Zc <- Data$Zc
+  m <- Data$m
   if(is.null(Xvar)){
-    X <- result$X
+    X <- Data$X
   } else {
-    X <- result$X[,Xvar]
+    X <- Data$X[,Xvar]
   }
 
   non.trivial <- which( apply(X,2,var) > 0 )
@@ -173,6 +256,11 @@ HTE <- function(result,Xvar=NULL,constant=TRUE){
     colnames(X) <- c("Const",colnames(X.temp))
   } else {
     X <- X.temp
+  }
+
+  if(Input.Type!="Data"){
+    Y0 <- Data$Y0
+    Y1 <- Data$Y1
   }
 
 
@@ -200,14 +288,30 @@ HTE <- function(result,Xvar=NULL,constant=TRUE){
   RX1 <- RX1[Zc==1,] ; RX0 <- RX0[Zc==0,]
   beta.var.type11 <- solve(Sxx1)%*%(var(RX1)/m)%*%solve(Sxx1) + solve(Sxx0)%*%(var(RX0)/(J-m))%*%solve(Sxx0)
 
+  if(Input.Type!="Data"){
+
+    truebeta11 <- solve( t(X)%*%X ) %*% ( t(X)%*%Y1 )
+    truebeta10 <- solve( t(X)%*%X ) %*% ( t(X)%*%Y0 )
+    true.beta.type1 <- truebeta11 - truebeta10
+    trueResidual1 <- Y1 - X%*%truebeta11
+    trueResidual0 <- Y0 - X%*%truebeta10
+    trueRX1 <- matrix(0,J,dim(X)[2])
+    trueRX0 <- matrix(0,J,dim(X)[2])
+    for(ii in 1:J){
+      trueRX1[ii,] <- t(X[C==Class[ii],])%*%trueResidual1[C==Class[ii]]*(J/N)
+      trueRX0[ii,] <- t(X[C==Class[ii],])%*%trueResidual0[C==Class[ii]]*(J/N)
+    }
+    true.beta.var.type1 <- solve(Sxx)%*%( var(trueRX1)/m + var(trueRX0)/(J-m) - var(trueRX1-trueRX0)/J )%*%solve(Sxx)
+
+  }
+
   Result <- list()
 
-  Result$Estimate <- rbind(as.numeric(beta.type1),0,0)
+  Result$Estimate <- rbind(as.numeric(beta.type1),
+                           sqrt(diag(beta.var.type11)),
+                           as.numeric(beta.type1)/sqrt(diag(beta.var.type11)))
   colnames(Result$Estimate) <- colnames(X)
   rownames(Result$Estimate) <- c("Estimate","SE","z-statistic")
-
-  Result$Estimate[2,] <- sqrt(diag(beta.var.type11))
-  Result$Estimate[3,] <- Result$Estimate[1,]/Result$Estimate[2,]
 
   if(constant==TRUE){
     Result$NonConst.Chi.Sq.Statistic <- c( t(beta.type1[-1])%*%solve(beta.var.type11[-1,-1])%*%beta.type1[-1],
@@ -220,11 +324,21 @@ HTE <- function(result,Xvar=NULL,constant=TRUE){
   colnames(Result$NonConst.Chi.Sq.Statistic) <- c("Statistic","df")
   rownames(Result$NonConst.Chi.Sq.Statistic) <- ""
 
+
+  if(Input.Type!="Data"){
+    Est.temp <- rbind(as.numeric(true.beta.type1),
+                      sqrt(diag(true.beta.var.type1)))
+    Result$Estimate <- rbind(Result$Estimate,Est.temp)
+    colnames(Result$Estimate) <- colnames(X)
+    rownames(Result$Estimate) <- c("Estimate","SE","z-statistic","True.Estimate","True.SE")
+
+  }
+
   return(Result)
 }
 
 #' @export
-SharpBound <- function(result , paraC=NULL, method="Linear", CIcalc=FALSE, SSsize=1000, level=0.95, seed=1){
+SharpBound <- function(Data , paraC=NULL, method="Linear", CIcalc=FALSE, SSsize=1000, level=0.95, seed=1, Input.Type="Data"){
   # result : reformed data
   # paraC  : column index of X that are used in classifier
   # method : linear (=1) or logistic (=2)
@@ -238,31 +352,150 @@ SharpBound <- function(result , paraC=NULL, method="Linear", CIcalc=FALSE, SSsiz
 
   Result <- list()
 
-  maxY <- max(result$Y)
-  minY <- min(result$Y)
-  Y <- (result$Y-minY)/(maxY-minY)
-  Z <- result$Z
-  C <- result$C
-  A <- result$A
-  Class <- result$Class
-  J <- result$J
-  N <- result$N
-  n <- result$n
-  nc <- result$nc
-  Zc <- result$Zc
-  m <- result$m
+  maxY <- max(Data$Y)
+  minY <- min(Data$Y)
+  Y <- (Data$Y-minY)/(maxY-minY)
+  Z <- Data$Z
+  C <- Data$C
+  A <- Data$A
+  Class <- Data$Class
+  J <- Data$J
+  N <- Data$N
+  n <- Data$n
+  nc <- Data$nc
+  Zc <- Data$Zc
+  m <- Data$m
 
   if(is.null(paraC)){
-    X <- result$X
+    X <- Data$X
   } else {
-    X <- result$X[,paraC]
+    X <- Data$X[,paraC]
   }
   non.trivial <- which( apply(X,2,var) > 0 )
   X.temp <- X[,non.trivial]
   X <- cbind(1,X.temp)
   colnames(X) <- c("Const",colnames(X.temp))
 
-  error <- result$error
+  error <- Data$error
+
+  ### population level
+
+  if(Input.Type!="Data"){
+
+    Y0 <- Data$Y0
+    Y1 <- Data$Y1
+    CS <- Data$CompSt
+
+
+    NT <- as.numeric(CS=="NT")
+    AT <- as.numeric(CS=="AT")
+    CO <- as.numeric(CS=="CO")
+
+    TNT <- sum(CS=="NT")
+    TAT <- sum(CS=="AT")
+    TCO <- sum(CS=="CO")
+
+    S1 <- sum(Y1)
+    S0 <- sum(Y0)
+
+    T1NT <- sum(Y1*NT)
+    T1AT <- sum(Y1*AT)
+    T1CO <- sum(Y1*CO)
+
+    T0NT <- sum(Y0*NT)
+    T0AT <- sum(Y0*AT)
+    T0CO <- sum(Y0*CO)
+
+    ## NT classifier
+
+    if(method=="Linear"){
+      theta <- as.numeric(lm(NT~X[,-1])$coefficients)
+      theta[is.na(theta)] <- 0
+      NT.lf <- X%*%theta
+    } else if (method=="Logistic"){
+      tempD <- cbind(NT,1,X[,-1])
+      GLM <- glmnet::glmnet(tempD[,-1],tempD[,1], family="binomial",alpha=0,lambda=0.0001)
+      theta <- as.numeric(c(GLM$a0,GLM$beta[-1]))
+      theta[is.na(theta)] <- 0
+      NT.lf <- predict(GLM,tempD[,-1],type="response")
+      NT.lf.link <- predict(GLM,tempD[,-1],type="link")
+    }
+    NT.newlf <- NT.lf+error[,1]
+
+    qL <- sort(NT.newlf)[N-TNT]
+    qU <- sort(NT.newlf)[N-TNT+1]
+
+    h <- (qU-qL)/3/10
+    c <- 1/max(log(TNT),log(N-TNT))/10
+
+    thr <- 0.000001
+    q <- try(solution(NT.newlf,TNT,h,c,thr),silent=TRUE)
+    NT.C <- as.numeric(NT.newlf>=q)
+
+    ## AT classifier
+
+    if(method=="Linear"){
+      theta <- as.numeric(lm(AT~X[,-1])$coefficients)
+      theta[is.na(theta)] <- 0
+      AT.lf <- X%*%theta
+    } else if (method=="Logistic"){
+      tempD <- cbind(AT,1,X[,-1])
+      GLM <- glmnet::glmnet(tempD[,-1],tempD[,1], family="binomial",alpha=0,lambda=0.0001)
+      theta <- as.numeric(c(GLM$a0,GLM$beta[-1]))
+      theta[is.na(theta)] <- 0
+      AT.lf <- predict(GLM,tempD[,-1],type="response")
+      AT.lf.link <- predict(GLM,tempD[,-1],type="link")
+    }
+    AT.newlf <- AT.lf+error[,2]
+
+    qL <- sort(AT.newlf)[N-TAT]
+    qU <- sort(AT.newlf)[N-TAT+1]
+
+    h <- (qU-qL)/3/10
+    c <- 1/max(log(TAT),log(N-TAT))/10
+
+    thr <- 0.000001
+    q <- try(solution(AT.newlf,TAT,h,c,thr),silent=TRUE)
+    AT.C <- as.numeric(AT.newlf>=q)
+
+    ## CO classifier
+
+    if(method=="Linear"){
+      CO.lf <- -(TNT/N)*NT.lf-(TAT/N)*AT.lf
+    } else if (method=="Logistic"){
+      CO.lf <- logistic(-(TNT/N)*NT.lf.link-(TAT/N)*AT.lf.link)
+    }
+
+    CO.newlf <- CO.lf+error[,3]
+
+    qL <- sort(CO.newlf)[N-TCO]
+    qU <- sort(CO.newlf)[N-TCO+1]
+
+    h <- (qU-qL)/3/10
+    c <- 1/max(log(TCO),log(N-TCO))/10
+
+    thr <- 0.000001
+    q <- try(solution(CO.newlf,TCO,h,c,thr),silent=TRUE)
+    CO.C <- as.numeric(CO.newlf>=q)
+
+    T1CNT <- sum(Y1*NT.C)
+    T1CAT <- sum(Y1*AT.C)
+    T1CCO <- sum(Y1*CO.C)
+
+    T0CNT <- sum(Y0*NT.C)
+    T0CAT <- sum(Y0*AT.C)
+    T0CCO <- sum(Y0*CO.C)
+
+    RNT <- sum(NT.C*(1-NT))
+    RAT <- sum(AT.C*(1-AT))
+    RCO <- sum(CO.C*(1-CO))
+
+    TruePara <- data.frame(matrix(c(TNT,TAT,TCO,S1,S0,T1NT,T0AT,T1CNT,T1CAT,T1CCO,T0CNT,T0CAT,T0CCO,RNT,RAT,RCO),1,16))
+    colnames(TruePara) <- c("TNT","TAT","TCO","S1","S0","T1NT","T0AT","T1CNT","T1CAT","T1CCO","T0CNT","T0CAT","T0CCO","RNT","RAT","RCO")
+  }
+
+
+
 
   ################ Estimation
 
@@ -497,7 +730,27 @@ SharpBound <- function(result , paraC=NULL, method="Linear", CIcalc=FALSE, SSsiz
   f.obj.AT <- c(rep(0,6),-1,1,-1,1,0,0, rep(0,6))
   f.obj.CO <- c(rep(0,12), -1,1,-1,1,0,0)
 
+  if(Input.Type!="Data"){
+    f.rhs <- c( T1NT, T0AT,
+                T1CNT, T1CAT, T1CCO,
+                T0CNT, T0CAT, T0CCO,
+                S1, S0,
+                0,0,0,0,0,0,0,0,0,
+                TNT-RNT, RNT, RNT,
+                TAT-RAT, RAT, RAT,
+                TCO-RCO, RCO, RCO )
 
+    LP.solution <- data.frame( matrix( c(lpSolve::lp("min",f.obj.NT,f.con,f.dir,f.rhs)$objval,
+                                         lpSolve::lp("max",f.obj.NT,f.con,f.dir,f.rhs)$objval,
+                                         lpSolve::lp("min",f.obj.AT,f.con,f.dir,f.rhs)$objval,
+                                         lpSolve::lp("max",f.obj.AT,f.con,f.dir,f.rhs)$objval,
+                                         lpSolve::lp("min",f.obj.CO,f.con,f.dir,f.rhs)$objval,
+                                         lpSolve::lp("max",f.obj.CO,f.con,f.dir,f.rhs)$objval)/
+                                         c(TNT,TNT,TAT,TAT,TCO,TCO),1,6) )
+    LP.solution[,is.nan(as.numeric(LP.solution))] <- 0
+    colnames(LP.solution) <- c("NT.LB","NT.UB","AT.LB","AT.UB","CO.LB","CO.UB")
+
+  }
 
   hat.f.rhs <- c( hat.T1NT, hat.T0AT,
                   hat.T1CNT, hat.T1CAT, hat.T1CCO,
@@ -935,6 +1188,16 @@ SharpBound <- function(result , paraC=NULL, method="Linear", CIcalc=FALSE, SSsiz
 
 
   Result$Bound <- hat.LP.solution*(maxY-minY) + minY
+  rownames(Result$Bound) <- "Est.Bound"
+  colnames(Result$Bound) <- c("NT.LB","NT.UB","AT.LB","AT.UB","CO.LB","CO.UB")
+
+  if(Input.Type!="Data"){
+    Result$Bound <- rbind(hat.LP.solution*(maxY-minY) + minY,
+                          LP.solution*(maxY-minY) + minY)
+    rownames(Result$Bound) <- c("Est.Bound","True.Bound")
+    colnames(Result$Bound) <- c("NT.LB","NT.UB","AT.LB","AT.UB","CO.LB","CO.UB")
+  }
+
   # Result$Para <- EstPara
   if(Violation==0){
     Result$Violation <- "No Violation"
@@ -965,7 +1228,7 @@ SharpBound <- function(result , paraC=NULL, method="Linear", CIcalc=FALSE, SSsiz
 
 }
 
-LongHudgens <- function(result , paraC=NULL, CIcalc=FALSE, SSsize=1000, level=0.95, seed=1){
+LongHudgens <- function(Data , paraC=NULL, CIcalc=FALSE, SSsize=1000, level=0.95, seed=1, Input.Type="Data"){
   # result : reformed data
   # paraC  : column index of X that are used in sharpening bounds
   # CIcalc : none (=0), bootstrap (="Boot")
@@ -978,21 +1241,21 @@ LongHudgens <- function(result , paraC=NULL, CIcalc=FALSE, SSsize=1000, level=0.
 
   Result <- list()
 
-  maxY <- max(result$Y)
-  minY <- min(result$Y)
-  Y <- (result$Y-minY)/(maxY-minY)
-  Z <- result$Z
-  C <- result$C
-  A <- result$A
-  Class <- result$Class
-  J <- result$J
-  N <- result$N
-  n <- result$n
-  nc <- result$nc
-  Zc <- result$Zc
-  m <- result$m
+  maxY <- max(Data$Y)
+  minY <- min(Data$Y)
+  Y <- (Data$Y-minY)/(maxY-minY)
+  Z <- Data$Z
+  C <- Data$C
+  A <- Data$A
+  Class <- Data$Class
+  J <- Data$J
+  N <- Data$N
+  n <- Data$n
+  nc <- Data$nc
+  Zc <- Data$Zc
+  m <- Data$m
 
-  X <- result$X
+  X <- Data$X
 
   if(!is.null(paraC)){
 
@@ -1007,7 +1270,106 @@ LongHudgens <- function(result , paraC=NULL, CIcalc=FALSE, SSsize=1000, level=0.
 
 
 
-  error <- result$error
+  error <- Data$error
+
+  ### population level
+
+  if(Input.Type!="Data"){
+
+    Y0 <- Data$Y0
+    Y1 <- Data$Y1
+    CS <- Data$CompSt
+
+    NT <- as.numeric(CS=="NT")
+    AT <- as.numeric(CS=="AT")
+    CO <- as.numeric(CS=="CO")
+
+    TNT <- sum(CS=="NT")
+    TAT <- sum(CS=="AT")
+    TCO <- sum(CS=="CO")
+
+    S1 <- sum(Y1)
+    S0 <- sum(Y0)
+
+    T1NT <- sum(Y1*NT)
+    T1AT <- sum(Y1*AT)
+    T1CO <- sum(Y1*CO)
+
+    T0NT <- sum(Y0*NT)
+    T0AT <- sum(Y0*AT)
+    T0CO <- sum(Y0*CO)
+
+    pi0 <- (T0CO+T0NT)/(TCO+TNT)
+    gamma <- (TNT)/(TCO+TNT)
+
+    lambda1 <- (T1AT+T1CO)/(TAT+TCO)
+    delta <- (TAT)/(TAT+TCO)
+
+    NT.B <- c(max(0,T1NT/TNT - pi0/gamma),min(T1NT/TNT,T1NT/TNT + (-pi0+(1-gamma))/gamma))
+    AT.B <- c(max(0,(lambda1-1+delta)/delta-T0AT/TAT),min(1-T0AT/TAT,lambda1/delta-T0AT/TAT))
+    CO.B <- c(max(0,(lambda1-delta)/(1-delta)-pi0/(1-gamma)),min(1,lambda1/(1-delta)+(-pi0+gamma)/(1-gamma)))
+
+    if(!is.null(paraC)){
+
+      ########## Binary variable
+
+
+      Strata.Var <- as.matrix( X[,paraC] )
+      Strata.Var <- as.numeric( apply(matrix(2^((dim(Strata.Var)[2]-1):0),dim(Strata.Var)[1],dim(Strata.Var)[2],byrow=T)*as.matrix( X[,paraC] ),1,sum) )+1
+      Strata.Var.lv <- sort(unique(Strata.Var))
+
+      NT.S <- AT.S <- CO.S <- list()
+      T1NT.S <- T1AT.S <- T1CO.S <- T0NT.S <- T0AT.S <- T0CO.S <- TNT.S <- TAT.S <- TCO.S <- rep(0,length(Strata.Var.lv))
+      pi0.S <- gamma.S <- lambda1.S <- delta.S <- rep(0,length(Strata.Var.lv))
+      NT.B.S <- AT.B.S <- CO.B.S <- matrix(0,length(Strata.Var.lv),2)
+
+      for(tt in 1:length(Strata.Var.lv)){
+        St <- Strata.Var.lv[tt]
+        NT.S[[tt]] <- NT*as.numeric(Strata.Var==St)
+        AT.S[[tt]] <- AT*as.numeric(Strata.Var==St)
+        CO.S[[tt]] <- CO*as.numeric(Strata.Var==St)
+
+        T1NT.S[tt] <- sum( Y1*NT.S[[tt]] )
+        T1AT.S[tt] <- sum( Y1*AT.S[[tt]] )
+        T1CO.S[tt] <- sum( Y1*CO.S[[tt]] )
+
+        T0NT.S[tt] <- sum( Y0*NT.S[[tt]] )
+        T0AT.S[tt] <- sum( Y0*AT.S[[tt]] )
+        T0CO.S[tt] <- sum( Y0*CO.S[[tt]] )
+
+        TNT.S[tt] <- sum(NT.S[[tt]])
+        TAT.S[tt] <- sum(AT.S[[tt]])
+        TCO.S[tt] <- sum(CO.S[[tt]])
+
+        pi0.S[tt] <- (T0CO.S[tt]+T0NT.S[tt])/(TCO.S[tt]+TNT.S[tt])
+        gamma.S[tt] <- TNT.S[tt]/(TCO.S[tt]+TNT.S[tt])
+        lambda1.S[tt] <- (T1AT.S[tt]+T1CO.S[tt])/(TAT.S[tt]+TCO.S[tt])
+        delta.S[tt] <- TAT.S[tt]/(TAT.S[tt]+TCO.S[tt])
+
+        NT.B.S[tt,] <- c(max(0,T1NT.S[tt]/TNT.S[tt] - pi0.S[tt]/gamma.S[tt]),
+                         min(T1NT.S[tt]/TNT.S[tt],T1NT.S[tt]/TNT.S[tt] + (-pi0.S[tt]+(1-gamma.S[tt]))/gamma.S[tt]))
+        AT.B.S[tt,] <- c(max(0,(lambda1.S[tt]-1+delta.S[tt])/delta.S[tt]-T0AT.S[tt]/TAT.S[tt]),
+                         min(1-T0AT.S[tt]/TAT.S[tt],lambda1.S[tt]/delta.S[tt]-T0AT.S[tt]/TAT.S[tt]))
+        CO.B.S[tt,] <- c(max(0,(lambda1.S[tt]-delta.S[tt])/(1-delta.S[tt])-pi0.S[tt]/(1-gamma.S[tt])),
+                         min(1,lambda1.S[tt]/(1-delta.S[tt])+(-pi0.S[tt]+gamma.S[tt])/(1-gamma.S[tt])))
+
+        NT.B.S[tt,is.nan(NT.B.S[tt,])] <- 0
+        AT.B.S[tt,is.nan(AT.B.S[tt,])] <- 0
+        CO.B.S[tt,is.nan(CO.B.S[tt,])] <- 0
+
+      }
+
+      TNT.S[is.nan(TNT.S)] <- 0
+      TAT.S[is.nan(TAT.S)] <- 0
+      TCO.S[is.nan(TCO.S)] <- 0
+
+
+      NT.B.A <- apply(matrix(TNT.S/TNT,length(Strata.Var.lv),2)*NT.B.S,2,sum)
+      AT.B.A <- apply(matrix(TAT.S/TAT,length(Strata.Var.lv),2)*AT.B.S,2,sum)
+      CO.B.A <- apply(matrix(TCO.S/TCO,length(Strata.Var.lv),2)*CO.B.S,2,sum)
+    }
+
+  }
 
 
   ################ Estimation
@@ -1326,15 +1688,29 @@ LongHudgens <- function(result , paraC=NULL, CIcalc=FALSE, SSsize=1000, level=0.
     S.estimates.A <- as.matrix(S.estimates.A)
   }
 
-  Result$Bound.NoAdj <- data.frame(matrix(c(hat.NT.B,hat.AT.B,hat.CO.B)*(maxY-minY)+minY,1,6))
 
+
+  Result$Bound.NoAdj <- data.frame(matrix(c(hat.NT.B,hat.AT.B,hat.CO.B)*(maxY-minY)+minY,1,6))
+  rownames(Result$Bound.NoAdj) <- "Est.Bound"
   if(!is.null(paraC)){
     Result$Bound.Adj <- data.frame(matrix(c(hat.NT.B.A,hat.AT.B.A,hat.CO.B.A)*(maxY-minY)+minY,1,6))
     # Result$Para <- cbind( VarType,
     #                       hat.TNT.S,hat.TCO.S,hat.TAT.S,
     #                       N.S,
     #                       N.Z1.S,N.Z0.S)
+    rownames(Result$Bound.Adj) <- "Est.Bound"
   }
+
+
+
+  if(Input.Type!="Data"){
+    Result$Bound.NoAdj <- data.frame(rbind(c(hat.NT.B,hat.AT.B,hat.CO.B)*(maxY-minY)+minY,
+                                          c(NT.B,AT.B,CO.B)*(maxY-minY)+minY))
+    Result$Bound.Adj <- data.frame(rbind(c(hat.NT.B.A,hat.AT.B.A,hat.CO.B.A)*(maxY-minY)+minY,
+                                        c(NT.B.A,AT.B.A,CO.B.A)*(maxY-minY)+minY))
+    rownames(Result$Bound.NoAdj) <- rownames(Result$Bound.Adj) <- c("Est.Bound","True.Bound")
+  }
+
 
   if(CIcalc==TRUE){
     Result$Resample.Bound.NoAdj <- S.estimates*(maxY-minY)+minY
@@ -1375,28 +1751,45 @@ LongHudgens <- function(result , paraC=NULL, CIcalc=FALSE, SSsize=1000, level=0.
 
 }
 
-Bound.Intersect <- function(Ours,LH,level=0.95){
+Bound.Intersect <- function(SharpBound.Object,LongHudgens.Object,level=0.95){
 
   alpha <- 1-level
 
   Result <- list()
 
-  Est.Bound <- rep(0,6)
-  Est.Bound[c(1,3,5)] <- apply(rbind( Ours$Bound , LH$Bound.Adj ),2,max)[c(1,3,5)]
-  Est.Bound[c(2,4,6)] <- apply(rbind( Ours$Bound , LH$Bound.Adj ),2,min)[c(2,4,6)]
-  Result$Bound <- data.frame(matrix(Est.Bound,1,6))
-  colnames(Result$Bound) <- c("NT.LB","NT.UB","AT.LB","AT.UB","CO.LB","CO.UB")
+  if(dim(SharpBound.Object$Bound)[1]==1){
 
-  if(!is.null(Ours$BootCIBound)){
+    Est.Bound <- rep(0,6)
+    Est.Bound[c(1,3,5)] <- apply(rbind( SharpBound.Object$Bound[1,] , LongHudgens.Object$Bound.Adj[1,] ),2,max)[c(1,3,5)]
+    Est.Bound[c(2,4,6)] <- apply(rbind( SharpBound.Object$Bound[1,] , LongHudgens.Object$Bound.Adj[1,] ),2,min)[c(2,4,6)]
+    Result$Bound <- data.frame(matrix(Est.Bound,1,6))
+    colnames(Result$Bound) <- c("NT.LB","NT.UB","AT.LB","AT.UB","CO.LB","CO.UB")
+
+  } else {
+
+    Est.Bound <- matrix(0,2,6)
+    Est.Bound[1,c(1,3,5)] <- apply(rbind( SharpBound.Object$Bound[1,] , LongHudgens.Object$Bound.Adj[1,] ),2,max)[c(1,3,5)]
+    Est.Bound[1,c(2,4,6)] <- apply(rbind( SharpBound.Object$Bound[1,] , LongHudgens.Object$Bound.Adj[1,] ),2,min)[c(2,4,6)]
+    Est.Bound[2,c(1,3,5)] <- apply(rbind( SharpBound.Object$Bound[2,] , LongHudgens.Object$Bound.Adj[2,] ),2,max)[c(1,3,5)]
+    Est.Bound[2,c(2,4,6)] <- apply(rbind( SharpBound.Object$Bound[2,] , LongHudgens.Object$Bound.Adj[2,] ),2,min)[c(2,4,6)]
+    Result$Bound <- data.frame(Est.Bound)
+    colnames(Result$Bound) <- c("NT.LB","NT.UB","AT.LB","AT.UB","CO.LB","CO.UB")
+    rownames(Result$Bound) <- c("Est.Bound","True.Bound")
+
+  }
+
+
+
+  if(!is.null(SharpBound.Object$BootCIBound)){
 
     bootCI <- rep(0,6)
 
-    if(Ours$Bound[1]>=LH$Bound.Adj[1]){ bootCI[1] <- Ours$BootCIBound[1] } else { bootCI[1] <- LH$BootCIBound.Adj[1] }
-    if(Ours$Bound[3]>=LH$Bound.Adj[3]){ bootCI[3] <- Ours$BootCIBound[3] } else { bootCI[3] <- LH$BootCIBound.Adj[3] }
-    if(Ours$Bound[5]>=LH$Bound.Adj[5]){ bootCI[5] <- Ours$BootCIBound[5] } else { bootCI[5] <- LH$BootCIBound.Adj[5] }
-    if(Ours$Bound[2]<=LH$Bound.Adj[2]){ bootCI[2] <- Ours$BootCIBound[2] } else { bootCI[2] <- LH$BootCIBound.Adj[2] }
-    if(Ours$Bound[4]<=LH$Bound.Adj[4]){ bootCI[4] <- Ours$BootCIBound[4] } else { bootCI[4] <- LH$BootCIBound.Adj[4] }
-    if(Ours$Bound[6]<=LH$Bound.Adj[6]){ bootCI[6] <- Ours$BootCIBound[6] } else { bootCI[6] <- LH$BootCIBound.Adj[6] }
+    if(SharpBound.Object$Bound[1,1]>=LongHudgens.Object$Bound.Adj[1,1]){ bootCI[1] <- SharpBound.Object$BootCIBound[1] } else { bootCI[1] <- LongHudgens.Object$BootCIBound.Adj[1] }
+    if(SharpBound.Object$Bound[1,3]>=LongHudgens.Object$Bound.Adj[1,3]){ bootCI[3] <- SharpBound.Object$BootCIBound[3] } else { bootCI[3] <- LongHudgens.Object$BootCIBound.Adj[3] }
+    if(SharpBound.Object$Bound[1,5]>=LongHudgens.Object$Bound.Adj[1,5]){ bootCI[5] <- SharpBound.Object$BootCIBound[5] } else { bootCI[5] <- LongHudgens.Object$BootCIBound.Adj[5] }
+    if(SharpBound.Object$Bound[1,2]<=LongHudgens.Object$Bound.Adj[1,2]){ bootCI[2] <- SharpBound.Object$BootCIBound[2] } else { bootCI[2] <- LongHudgens.Object$BootCIBound.Adj[2] }
+    if(SharpBound.Object$Bound[1,4]<=LongHudgens.Object$Bound.Adj[1,4]){ bootCI[4] <- SharpBound.Object$BootCIBound[4] } else { bootCI[4] <- LongHudgens.Object$BootCIBound.Adj[4] }
+    if(SharpBound.Object$Bound[1,6]<=LongHudgens.Object$Bound.Adj[1,6]){ bootCI[6] <- SharpBound.Object$BootCIBound[6] } else { bootCI[6] <- LongHudgens.Object$BootCIBound.Adj[6] }
 
     Result$BootCIBound <- data.frame(matrix(as.numeric(bootCI),1,6))
     colnames(Result$BootCIBound) <- c("NT.LB","NT.UB","AT.LB","AT.UB","CO.LB","CO.UB")

@@ -4,7 +4,7 @@
 }
 \description{
 Find the calibration value \emph{q} satisfying \eqn{T = \sum_{ji} I_{c,h} (L_{ji} - q)} from a grid-search.}
-\usage{solution(L,T,h,c,thr)}
+\usage{solution(L, T, h, c, thr)}
 \arguments{
   \item{L}{A vector in the surrogate indicator function \eqn{\mathcal{I}_{c,h}}.}
   \item{T}{A number in the left hand side.}

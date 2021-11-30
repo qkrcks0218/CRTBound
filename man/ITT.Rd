@@ -3,18 +3,19 @@
 \title{Inference of the Intent-to-Treat Effect
 }
 \description{
-Analyze the data (obtained from \code{\link{Data.Reform}} function) to infer the intent-to-treat effect; see Section 3 of Park and Kang (2021) for details.
+Analyze the data (obtained from \code{\link{Data.Reform}} or \code{\link{Simulation.Reform}} functions) to infer the intent-to-treat effect; see Section 3 of Park and Kang (2021) for details.
 }
-\usage{
-ITT(Reformed.Data)
-}
+\usage{ITT(Data, Input.Type="Data")}
 \arguments{
-  \item{Reformed.Data}{A list obtained from \code{\link{Data.Reform}} function.}
+  \item{Data}{A list obtained from \code{\link{Data.Reform}} and \code{\link{Simulation.Reform}} functions.}
+  \item{Input.Type}{\emph{(Optional)} A variable whether Data is from \code{\link{Data.Reform}} (Input.Type="Data") or \code{\link{Simulation.Reform}} (Input.Type="Sim") function. The default The default option is "Data".}
 }
 \value{
 \item{ITT}{A point estimate of the ITT effect.}
 \item{SE}{The standard error of the above point estimate.}
 \item{z-statistic}{The z-statistic of the ITT effect.}
+\item{True.ITT}{\emph{Optional} The true ITT effect; only available under Input.Type="Sim"}
+\item{True.SE}{\emph{Optional} The true standard error; only available under Input.Type="Sim"}
 }
 \references{
 Chan Park & Hyunseung Kang (2021+) \strong{Assumption-Lean Analysis of Cluster Randomized Trials in Infectious Diseases for Intent-to-Treat Effects and Network Effects}, \emph{Journal of the American Statistical Association} \href{https://www.tandfonline.com/doi/full/10.1080/01621459.2021.1983437}{[Link]}
@@ -64,10 +65,12 @@ Y <- Z*Y1 + (1-Z)*Y0
 #################################
 
 Reformed.Data <- Data.Reform(Y,Z,A,C,X,seed=1)
+Simulated.Data <- Simulation.Reform(Y0,Y1,Z,A0,A1,C,X,seed=1)
 
 #################################
 # ITT Effect
 #################################
 
-ITT.Data <- ITT(Reformed.Data)
+ITT.Data <- ITT(Reformed.Data,Input.Type="Data")
+ITT.Sim.Data <- ITT(Simulated.Data,Input.Type="Sim")
 }
