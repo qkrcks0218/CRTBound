@@ -10,8 +10,8 @@ Analyze the data (obtained from \code{\link{Data.Reform}} or \code{\link{Simulat
   \item{Data}{A list obtained from \code{\link{Data.Reform}} and \code{\link{Simulation.Reform}} functions.}
   \item{Xvar}{\emph{(Optional)} Indices of the pre-treatment covariate matrix Reformed.Data$X that are used in inference of the heterogeneous ITT effect. The default option is to use all pre-treatment covariates.}
   \item{constant}{\emph{(Optional)} A logical value whether the constant intercept is included in the analysis.}
+  \item{Input.Type}{\emph{(Optional)} A variable whether Data is from \code{\link{Data.Reform}} (Input.Type="Data") or \code{\link{Simulation.Reform}} (Input.Type="Sim") function. The default The default option is "Data".}
 }
-\item{Input.Type}{\emph{(Optional)} A variable whether Data is from \code{\link{Data.Reform}} (Input.Type="Data") or \code{\link{Simulation.Reform}} (Input.Type="Sim") function. The default The default option is "Data".}
 \value{
 \item{Estimate}{A matrix containing the point estimates of the heterogeneity parameters, the standard errors, and the z-statistics. When Input.Type="Sim", the true heterogeneity parameters and the true standard errors are available.}
 \item{NonConst.Chi.Sq.Statistic}{A chi-square statistic obtained from testing the overall non-intercept null hypothesis.}

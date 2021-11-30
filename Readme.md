@@ -71,14 +71,33 @@ Y <- Z*Y1 + (1-Z)*Y0
 #################################
 
 Reformed.Data <- Data.Reform(Y,Z,A,C,X,seed=1)
+Simulated.Data <- Simulation.Reform(Y0,Y1,Z,A0,A1,C,X,seed=1)
+
+#################################
+# ITT Effect
+#################################
+
+ITT.Data <- ITT(Reformed.Data,Input.Type="Data")
+ITT.Sim.Data <- ITT(Simulated.Data,Input.Type="Sim")
+
+#################################
+# HT Effect
+#################################
+
+HT.Data <- HTE(Reformed.Data,Xvar=c(1,2,3,4),Input.Type="Data")
+HT.Sim.Data <- HTE(Simulated.Data,Xvar=c(1,2,3,4),Input.Type="Sim")
 
 #################################
 # Bounds
 #################################
 
-Bound1 <- SharpBound(Reformed.Data,paraC=c(1,2,3,4),method="Logistic",CIcalc=TRUE,SSsize=100,level=0.95,seed=1)
-Bound2 <- LongHudgens(Reformed.Data,paraC=c(3),CIcalc=TRUE,SSsize=100,level=0.95,seed=1)
-Bound3 <- Bound.Intersect(Bound1,Bound2,level=0.95)
+Bound1 <- SharpBound(Reformed.Data,paraC=c(1,2,3,4),method="Logistic",CIcalc=TRUE,SSsize=100,level=0.95,seed=1,Input.Type="Data")
+Bound2 <- LongHudgens(Reformed.Data,paraC=c(3),CIcalc=TRUE,SSsize=100,level=0.95,seed=1,Input.Type="Data")
+Bound3 <- Bound.Intersect(Bound1,Bound2,level=0.95,Input.Type="Data")
+
+Bound1.Sim <- SharpBound(Simulated.Data,paraC=c(1,2,3,4),method="Logistic",CIcalc=TRUE,SSsize=100,level=0.95,seed=1,Input.Type="Sim")
+Bound2.Sim <- LongHudgens(Simulated.Data,paraC=c(3),CIcalc=TRUE,SSsize=100,level=0.95,seed=1,Input.Type="Sim")
+Bound3.Sim <- Bound.Intersect(Bound1.Sim,Bound2.Sim,level=0.95,Input.Type="Sim")
 ```
 
 
